@@ -55,11 +55,12 @@ namespace MetaWearWinStoreAPI
         /** UUID for receiving notifications from MetaWear i.e. reads or characteristic changes */
         public static readonly MetaWear NOTIFICATION_3 = new MetaWear("NOTIFICATION_3", "9008", false );
 
-        private MetaWear(string theName , string uuidPart , Boolean on = true, Boolean writeableChar = false , Boolean canNotify = false)
+        private MetaWear(string theName , string uuidPart , Boolean on = true, Boolean writeableChar = false , Boolean canNotify = false, Boolean encrypt = false)
         {
             this.uuid = new Guid(string.Format("326A{0:S}-85CB-9195-D9DD-464CFBBAE75A", uuidPart));
             this.name = theName;
             this.enabled = on;
+            this.encryptable = encrypt;
             this.writable = writeableChar;
             this.notifyable = canNotify;
         }

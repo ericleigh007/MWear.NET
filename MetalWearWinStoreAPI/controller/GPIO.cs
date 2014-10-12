@@ -129,8 +129,9 @@ namespace MetaWearWinStoreAPI
                 {
                     case GPIO_Notify_type.AnalogInputAbsVoltage:
                     {
-                        short value = BitConverter.ToInt16(data, 2);  
-                        // ByteBuffer.wrap(data, 2, 2).getShort();
+                        short value = BitConverter.ToInt16(data, 2); 
+                        if ( BitConverter.IsLittleEndian ) value = value.SwapBytes();
+
                         foreach (Callbacks cb in callbacks) 
                         {
                             cb.receivedAnalogInputAsAbsValue(value);
@@ -141,8 +142,9 @@ namespace MetaWearWinStoreAPI
 
                     case GPIO_Notify_type.AnalogInputSupplyRatio:
                     {
-                        short value = BitConverter.ToInt16(data, 2);  // ByteBuffer.wrap(data, 2, 2).getShort();
-//                        short value = (short)(ByteBuffer.wrap(data, 2, 2).getShort() >> 6);
+                        short value = BitConverter.ToInt16(data, 2);  
+                        if (BitConverter.IsLittleEndian) value = value.SwapBytes();
+
                         foreach (Callbacks cb in callbacks) 
                         {
                             cb.receivedAnalogInputAsSupplyRatio(value);

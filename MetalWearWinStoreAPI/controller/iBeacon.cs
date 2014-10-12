@@ -167,7 +167,7 @@ namespace MetaWearWinStoreAPI
                         Guid uuid= new Guid(ByteBuffer.wrap(data, 2, 8).getLong(), 
                                 ByteBuffer.wrap(data, 10, 8).getLong());
                          */
-                        /* optimize */
+                        /* optimize */ /* HACK - endian-ness needs work here */
                         byte[] tmp = new byte[16];
                         Buffer.BlockCopy( data , 2 , tmp , 0 , 16);
                         Guid uuid = new Guid(tmp);
@@ -182,7 +182,10 @@ namespace MetaWearWinStoreAPI
 
                     case IBEACON_Notify_type.Major:
                     {
+                        // assumes BitConveter.IsLittleEndian is true
                         short major = BitConverter.ToInt16(data, 2);
+                        if (BitConverter.IsLittleEndian) major = major.SwapBytes();
+
                         foreach (Callbacks cb in callbacks) 
                         {
                             cb.receivedMajor(major);
@@ -194,6 +197,8 @@ namespace MetaWearWinStoreAPI
                     case IBEACON_Notify_type.Minor:
                     {
                         short minor = BitConverter.ToInt16(data, 2);
+                        if (BitConverter.IsLittleEndian) minor = minor.SwapBytes();
+
                         foreach (Callbacks cb in callbacks)
                         {
                             cb.receivedMinor(minor);
@@ -225,6 +230,8 @@ namespace MetaWearWinStoreAPI
                     case IBEACON_Notify_type.Ad_Period:
                     {
                         short period = BitConverter.ToInt16(data, 2);
+                        if (BitConverter.IsLittleEndian) period = period.SwapBytes();
+
                         foreach (Callbacks cb in callbacks) 
                         {
                             cb.receivedPeriod(period);

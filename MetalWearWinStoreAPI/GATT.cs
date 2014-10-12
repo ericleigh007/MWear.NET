@@ -48,6 +48,7 @@ namespace MetaWearWinStoreAPI
         public GATTService gattService { get; set; }
 
         public Boolean enabled { get; protected set; }
+        public Boolean encryptable { get; protected set; }
         public Guid uuid { get; protected set; }
         public Boolean notifyable { get; protected set; }
         public Boolean writable { get; protected set; }

@@ -160,7 +160,10 @@ namespace MetaWearWinStoreAPI
 
                         RotationDirection direction= (RotationDirection) (Enum.GetValues(typeof(RotationDirection)) as byte[])[data[3]];
 //                        short delay= ByteBuffer.wrap(data, 5, 2).getShort();
+                        // assumes BitConverter.IsLittleEndian is true
                         short delay = BitConverter.ToInt16(data, 5);
+                        if (BitConverter.IsLittleEndian) delay = delay.SwapBytes();
+
                         foreach (Callbacks cb in callbacks)
                         {
                             cb.receivedRotatationState(data[2], direction, data[4], delay);

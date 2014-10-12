@@ -106,9 +106,14 @@ namespace MetaWearWinStoreAPI
                                 y= (short)(ByteBuffer.wrap(data, 4, 2).getShort() >> 4), 
                                 z= (short)(ByteBuffer.wrap(data, 6, 2).getShort() >> 4);
                          */
-                        short x = (short) ( BitConverter.ToInt16(data,2) >> 4);
-                        short y = (short) ( BitConverter.ToInt16(data,4) >> 4);
-                        short z = (short) ( BitConverter.ToInt16(data,6) >> 4);
+                        short x = (short) (BitConverter.ToInt16(data,2) >> 4);
+                        if (BitConverter.IsLittleEndian) x = x.SwapBytes();
+
+                        short y = (short)(BitConverter.ToInt16(data, 4) >> 4);
+                        if (BitConverter.IsLittleEndian) y = y.SwapBytes();
+
+                        short z = (short)(BitConverter.ToInt16(data, 6) >> 4);
+                        if (BitConverter.IsLittleEndian) z = z.SwapBytes();
 
                         foreach(Callbacks cb in callbacks) 
                         {

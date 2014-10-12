@@ -116,5 +116,15 @@ namespace MetaWearWinStoreAPI
 
             return -1;
         }
+
+        public static Int16 SwapBytes(this Int16 s)
+        {
+            return (Int16)((s & 0xFFU) << 8 | (s & 0xFF00U) >> 8);
+        }
+
+        public static UInt16 SwapBytes(this UInt16 s)
+        {
+            return (UInt16)((s & 0xFFU) << 8 | (s & 0xFF00U) >> 8);
+        }
     }
 }

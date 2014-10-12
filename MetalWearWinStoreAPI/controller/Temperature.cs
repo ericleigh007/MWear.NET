@@ -103,9 +103,22 @@ namespace MetaWearWinStoreAPI
                 {
                     case TEMPERATURE_Notify_type.Temperature:
                     {
-                        byte[] reverse= new byte[] {data[3], data[2]};
-                        // float degrees = (float)(Short.valueOf(ByteBuffer.wrap(reverse).getShort()).floatValue() / 4.0);
-                        float degrees = ( (float) ( (short) (BitConverter.ToInt16(reverse, 0) ) ) / 4.0f);
+                        // Java - byte reverse = new byte[] {data[3],data[2]};
+                        // Java - big endian float degrees = (float)(Short.valueOf(ByteBuffer.wrap(reverse).getShort()).floatValue() / 4.0);
+
+                        float degrees = 0.0f;
+                        if (BitConverter.IsLittleEndian)
+                        {
+                            degrees = ((BitConverter.ToInt16(data, 2)) / 4.0f);
+                        }
+                        else
+                        {
+                            byte temp = data[3];
+                            data[3] = data[2];
+                            data[2] = temp;
+                            degrees = ((BitConverter.ToInt16(data, 2)) / 4.0f);
+                        }
+
                         foreach (Callbacks cb in callbacks)
                         {
                             cb.receivedTemperature(degrees);
@@ -131,7 +144,7 @@ namespace MetaWearWinStoreAPI
              * Called when MetaWear has responded with the temperature reading
              * @param degrees Value of the temperature in Celsius
              */
-            public void receivedTemperature(float degrees) { }
+            public abstract void receivedTemperature(float degrees);
         }
 
         /**

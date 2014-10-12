@@ -204,6 +204,9 @@ public class MetaWearBleService
 //        foreach( GATTService gs in GATTService.GetValues() )
 //        {
             // enumerate each characteristic
+        //
+        // Unlike a fully-compliant BLE device, the MetaWear has only one characteristic for ALL ouptut (as of this time
+        // anyway).  A more compliant device would actually have multiple characteristics, one for EACH output.
         foreach (GATTCharacteristic gc in MetaWear.GetValues())
         {
             if (gc.enabled)
@@ -213,16 +216,22 @@ public class MetaWearBleService
 
                 // var chr = deviceService.GetCharacteristics(MetaWear.NOTIFICATION_1.uuid)[0];
 
-                // While encryption is not required by all devices, if encryption is supported by the device,
-                // it can be enabled by setting the ProtectionLevel property of the Characteristic object.
-                // All subsequent operations on the characteristic will work over an encrypted link.
-                //                    chr.ProtectionLevel = GattProtectionLevel.EncryptionRequired;
+                // If encryption is known to be supported (tests show it currently isn't), then enable ecnyprtion
+                // on the charactistic 
+                if ( gc.encryptable )
+                {
+                    chr.ProtectionLevel = GattProtectionLevel.EncryptionRequired;
+                }
 
+                // We tend to get exceptions trying to turn on things that aren't supported, so we've added priperties
+                // to the characterisics to define them better
                 if (gc.notifyable)
                 {
-                    // Register the event handler for receiving notifications.  This is only for real notifications,
-                    // NOT reads (which have to be read in-line)
+                    // Register the event handler for receiving notifications.  
+                    // Notifications can result in a "streaming" behavior for tihngs like the accelerator, or 
+                    // a one-to-one behavior, which returns once for each query, such as Temperature
                     chr.ValueChanged += Notifiable_Char_ValueChanged;
+
                     // In order to avoid unnecessary communication with the device, determine if the device is already 
                     // correctly configured to send notifications.
                     GattCommunicationStatus status = await EnableNotificationAsync(chr);
@@ -330,11 +339,11 @@ public class MetaWearBleService
 
             int data_count = data.Length;
 
-            LookupAndNotify(data);
+            LookupAndNotify(data , dt_timestamp);
 
         }
 
-       private static void LookupAndNotify(byte[] buffer )
+       private static void LookupAndNotify(byte[] buffer, DateTimeOffset timestamp)
        {
            // toss notifications until notifies are enabled (basically we need to build the opodeMap first)
            if (!Module.notifyEnabled)
@@ -369,6 +378,10 @@ public class MetaWearBleService
 
            if ( moduleCallbackMap.ContainsKey( modOp ))
            {
+#if DEBUG
+               SD.Debug.WriteLine(string.Format("t:{0:ss.fff}, m:{1} r:{2} d:{3} dl:{4}",
+                                                 timestamp , modOp , regOp , buffer[2], buffer.Length));
+#endif
                Module.lookupModule(modOp).lookupRegister(regOp).notifyCallbacks(moduleCallbackMap[modOp], buffer);
            }
 #if DEBUG
@@ -486,6 +499,8 @@ public class MetaWearBleService
             throw new NotImplementedException("use getXXXXModule instead");
         }
 
+        // Lookup a module by its name and return the object
+        // Use names instead of the objects in the case statement, since C# doens't support object cases
         public ModuleController getModuleController(string moduleName )
         {
             switch(moduleName)
@@ -508,11 +523,12 @@ public class MetaWearBleService
                     return getHapticModule();
                 case "Debug":
                     return getDebugModule();
+
+                // Add more modules here, and if we didn't find a match for hte module name, throw an exception
+                // this I view as more correct than returning NULL, since a bad module name would indicate a 
+                // static error in the app
                 default:
-#if DEBUG
-                SD.Debug.WriteLine(string.Format("App error -- module controller for module {0} does not exist"));
-#endif
-                return null;
+                   throw new NotImplementedException( string.Format("App error -- module controller for module {0} does not exist"));
             }
         }
 
@@ -652,6 +668,7 @@ public class MetaWearBleService
 
             public override IBeacon setUUID(Guid uuid) 
             {
+                // TODO - may be endianness problems here
                 byte[] uuidBytes = uuid.ToByteArray();
                 writeRegister(Register.ADVERTISEMENT_UUID, uuidBytes);
                 return this;
@@ -664,12 +681,16 @@ public class MetaWearBleService
 
             public override IBeacon setMajor(short major) 
             {
+                if (BitConverter.IsLittleEndian) major = major.SwapBytes();
+
                 writeRegister(Register.MAJOR, (byte)(major >> 8 & 0xff), (byte)(major & 0xff));
                 return this;
             }
 
             public override IBeacon setMinor(short minor) 
             {
+                if (BitConverter.IsLittleEndian) minor = minor.SwapBytes();
+
                 writeRegister(Register.MINOR, (byte)(minor >> 8 & 0xff), (byte)(minor & 0xff));
                 return this;
             }
@@ -688,6 +709,8 @@ public class MetaWearBleService
 
             public override IBeacon setAdvertisingPeriod(short freq) 
             {
+                if (BitConverter.IsLittleEndian) freq = freq.SwapBytes();
+
                 writeRegister(Register.ADVERTISEMENT_PERIOD, (byte)(freq >> 8 & 0xff), (byte)(freq & 0xff));
                 return this;
             }
@@ -706,7 +729,7 @@ public class MetaWearBleService
         public class ChannelDataWriterImpl : MetaWearWinStoreAPI.LED.ChannelDataWriter
         {
             private byte[] channelData= new byte[15];
-            MetaWearWinStoreAPI.LED.ColorChannel color;   /* hack */
+            public MetaWearWinStoreAPI.LED.ColorChannel color;
                 
             public override MetaWearWinStoreAPI.LED.ColorChannel getChannel() 
             {
@@ -727,6 +750,8 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withRiseTime(short time) 
             {
+                if (BitConverter.IsLittleEndian) time = time.SwapBytes();
+
                 channelData[5]= (byte)(time >> 8);
                 channelData[4]= (byte)(time & 0xff);
                 return this;
@@ -734,28 +759,36 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withHighTime(short time) 
             {
-                channelData[7]= (byte)(time >> 8);
+                if (BitConverter.IsLittleEndian) time = time.SwapBytes();
+
+                channelData[7] = (byte)(time >> 8);
                 channelData[6]= (byte)(time & 0xff);
                 return this;
             }
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withFallTime(short time) 
             {
-                channelData[9]= (byte)(time >> 8);
+                if (BitConverter.IsLittleEndian) time = time.SwapBytes();
+
+                channelData[9] = (byte)(time >> 8);
                 channelData[8]= (byte)(time & 0xff);
                 return this;
             }
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withPulseDuration(short period) 
             {
-                channelData[11]= (byte)(period >> 8);
+                if (BitConverter.IsLittleEndian) period = period.SwapBytes();
+
+                channelData[11] = (byte)(period >> 8);
                 channelData[10]= (byte)(period & 0xff);
                 return this;
             }
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withPulseOffset(short offset) 
             {
-                channelData[13]= (byte)(offset >> 8);
+                if (BitConverter.IsLittleEndian) offset = offset.SwapBytes();
+
+                channelData[13] = (byte)(offset >> 8);
                 channelData[12]= (byte)(offset & 0xff);
                 return this;
             }
@@ -793,7 +826,9 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter setColorChannel(MetaWearWinStoreAPI.LED.ColorChannel color)
             {
-                return new ChannelDataWriterImpl() as MetaWearWinStoreAPI.LED.ChannelDataWriter;
+                var cc = new ChannelDataWriterImpl();
+                cc.color = color;
+                return cc as MetaWearWinStoreAPI.LED.ChannelDataWriter;
             }
         }
 
@@ -882,6 +917,8 @@ public class MetaWearBleService
             public override void rotateStrand(byte strand, RotationDirection direction, byte repetitions,
                     short delay) 
             {
+                if (BitConverter.IsLittleEndian) delay = delay.SwapBytes();
+
                 writeRegister(Register.ROTATE, strand, (byte)(direction.Ordinal()), repetitions, 
                         (byte)(delay >> 8 & 0xff), (byte)(delay & 0xff));
             }
@@ -924,11 +961,15 @@ public class MetaWearBleService
         {
             public override void startMotor(short pulseWidth) 
             {
+                if (BitConverter.IsLittleEndian) pulseWidth = pulseWidth.SwapBytes();
+
                 writeRegister(Register.PULSE, (byte)128, (byte)(pulseWidth & 0xff), (byte)(pulseWidth >> 8), (byte)1);
             }
 
             public override void startBuzzer(short pulseWidth) 
             {
+                if (BitConverter.IsLittleEndian) pulseWidth = pulseWidth.SwapBytes();
+
                 writeRegister(Register.PULSE, (byte)248, (byte)(pulseWidth & 0xff), (byte)(pulseWidth >> 8), (byte)0);
             }
         }
@@ -980,7 +1021,7 @@ public class MetaWearBleService
 
         DataReader.FromBuffer(rr.Value).ReadBytes(retData);
 
-        LookupAndNotify(retData);
+        LookupAndNotify(retData,DateTimeOffset.Now);
 
         return rr.Status;
     }
@@ -1191,6 +1232,8 @@ public class MetaWearBleService
     }
     */
 
+    // Reading a register really means writing a command to the command buffer and then receiving a response
+    // as a characteristic output of the device.
     private static void readRegister( APIRegister register, params byte[] parameters)
     {
         queueCommand(Registers.buildReadCommand(register, parameters));
