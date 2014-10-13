@@ -750,7 +750,7 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withRiseTime(short time) 
             {
-                if (BitConverter.IsLittleEndian) time = time.SwapBytes();
+                if (!BitConverter.IsLittleEndian) time = time.SwapBytes();
 
                 channelData[5]= (byte)(time >> 8);
                 channelData[4]= (byte)(time & 0xff);
@@ -759,7 +759,7 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withHighTime(short time) 
             {
-                if (BitConverter.IsLittleEndian) time = time.SwapBytes();
+                if (!BitConverter.IsLittleEndian) time = time.SwapBytes();
 
                 channelData[7] = (byte)(time >> 8);
                 channelData[6]= (byte)(time & 0xff);
@@ -768,7 +768,7 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withFallTime(short time) 
             {
-                if (BitConverter.IsLittleEndian) time = time.SwapBytes();
+                if (!BitConverter.IsLittleEndian) time = time.SwapBytes();
 
                 channelData[9] = (byte)(time >> 8);
                 channelData[8]= (byte)(time & 0xff);
@@ -777,7 +777,7 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withPulseDuration(short period) 
             {
-                if (BitConverter.IsLittleEndian) period = period.SwapBytes();
+                if (!BitConverter.IsLittleEndian) period = period.SwapBytes();
 
                 channelData[11] = (byte)(period >> 8);
                 channelData[10]= (byte)(period & 0xff);
@@ -786,7 +786,7 @@ public class MetaWearBleService
 
             public override MetaWearWinStoreAPI.LED.ChannelDataWriter withPulseOffset(short offset) 
             {
-                if (BitConverter.IsLittleEndian) offset = offset.SwapBytes();
+                if (!BitConverter.IsLittleEndian) offset = offset.SwapBytes();
 
                 channelData[13] = (byte)(offset >> 8);
                 channelData[12]= (byte)(offset & 0xff);
