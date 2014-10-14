@@ -43,8 +43,67 @@ namespace MetaWearWinStoreAPI
      * @port Eric Snyder
      * @see com.mbientlab.metawear.api.Module#ACCELEROMETER
      */
+
+    public class AccelerometerValueChangedArgs : EventArgs
+    {
+        public AccelerometerValueChangedArgs(byte[] rawData, DateTimeOffset timestamp, double x , double y , double z)
+        {
+            RawData = rawData;
+            X = x;
+            Y = y;
+            Z = z;
+            Timestamp = timestamp;
+        }
+
+        public double X { get; private set; }
+        public double Y { get; private set; }
+        public double Z { get; private set; }
+
+        public byte[] RawData { get; private set; }
+
+        public DateTimeOffset Timestamp { get; private set; }
+    }
+
+    public class AccelerometerFreeFallChangedArgs : EventArgs
+    {
+        public AccelerometerFreeFallChangedArgs(byte[] rawData, DateTimeOffset timestamp, Boolean falling)
+        {
+            RawData = rawData;
+            Falling = falling;
+            Timestamp = timestamp;
+        }
+
+        public Boolean Falling { get; private set; }
+
+        public byte[] RawData { get; private set; }
+
+        public DateTimeOffset Timestamp { get; private set; }
+    }
+
+    public class AccelerometerOrientationChangedArgs : EventArgs
+    {
+        public AccelerometerOrientationChangedArgs(byte[] rawData, DateTimeOffset timestamp, Byte orientCode)
+        {
+            RawData = rawData;
+            OrientCode = orientCode;
+            Timestamp = timestamp;
+        }
+
+        public Byte OrientCode { get; private set; } // TODO: change to enumeration
+
+        public byte[] RawData { get; private set; }
+
+        public DateTimeOffset Timestamp { get; private set; }
+    }
+
     public abstract class Accelerometer : MetaWearController.ModuleController
     {
+        /* Later -- after flattening this class structure we can add this event, but not until
+        public event EventHandler<AccelerometerValueChangedArgs> AccelerometerValueChanged;
+        public event EventHandler<AccelerometerFreeFallChangedArgs> AccelerometerFreeFallChanged;
+        public event EventHandler<AccelerometerOrientationChangedArgs> AccelerometerOrientationChanged;
+         */
+
         /**
          * Enumeration of registers for the accelerometer module
          * @author Eric Tsai
@@ -94,6 +153,13 @@ namespace MetaWearWinStoreAPI
                             {
                                 cb.stoppedFreeFall();
                             }
+
+                            /*
+                            if (AccelerometerFreeFallChanged != null )
+                            {
+                                AccelerometerFreeFallChanged(this, new AccelerometerFreeFallChangedArgs( data , DateTime.MinValue , (data[2] != 0 ? true : false)));
+                            }
+                             */
                         }
 
                         return;
@@ -118,6 +184,13 @@ namespace MetaWearWinStoreAPI
                         foreach(Callbacks cb in callbacks) 
                         {
                             cb.receivedDataValue(x, y, z);
+
+                            /*
+                            if (AccelerometerValueChanged != null)
+                            {
+                                AccelerometerValueChanged(this, new AccelerometerValueChangedArgs(data, DateTime.MinValue, x , y , z );
+                            }
+                            */
                         }
                         
                         return;
@@ -128,6 +201,13 @@ namespace MetaWearWinStoreAPI
                         foreach(Callbacks cb in callbacks) 
                         {
                             cb.receivedOrientation(data[2]);
+
+                            /*
+                            if (AccelerometerOrientationChanged != null)
+                            {
+                                AccelerometerOrientationChanged(this, new AccelerometerOrientationChangedArgs(data, DateTime.MinValue, data[2] );
+                            }
+                            */
                         }
 
                         return;
