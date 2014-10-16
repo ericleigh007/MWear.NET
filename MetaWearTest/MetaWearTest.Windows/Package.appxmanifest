@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="6b81175f-5db5-4c9a-905b-4f2854ea4257" Publisher="CN=Eric" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>MetaWearTest.Windows</DisplayName>
+    <PublisherDisplayName>Eric</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.3.0</OSMinVersion>
+    <OSMaxVersionTested>6.3.0</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MetaWearTest.Windows.App">
+      <m2:VisualElements DisplayName="MetaWearTest.Windows" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png" Description="A test app for MetaWear functions - Windows Universal for Windows" ForegroundText="light" BackgroundColor="#464646">
+        <m2:SplashScreen Image="Assets\SplashScreen.png" />
+        <m2:InitialRotationPreference>
+          <m2:Rotation Preference="portrait" />
+          <m2:Rotation Preference="landscape" />
+        </m2:InitialRotationPreference>
+      </m2:VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+    <m2:DeviceCapability Name="bluetooth.genericAttributeProfile">
+      <!-- Eventually change this to MetaWear -->
+      <m2:Device Id="any">
+        <!-- Standard Battery service -->
+        <m2:Function Type="name:battery" />
+        <!-- Standard deviceInformation -->
+        <m2:Function Type="serviceId:0000180a-0000-1000-8000-00805f9b34fb" />
+        <!-- MetaWear service -->
+        <m2:Function Type="serviceId:326A9000-85CB-9195-D9DD-464CFBBAE75A" />
+      </m2:Device>
+    </m2:DeviceCapability>
+  </Capabilities>
+</Package>

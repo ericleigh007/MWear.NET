@@ -1,0 +1,146 @@
+﻿<Page
+    x:Name="pageRoot"
+    x:Class="MetaWearTest.HubPage"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MetaWearTest"
+    xmlns:data="using:MetaWearTest.Data"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <!-- Grid-appropriate 310 by 260 pixel item template as seen in section 4 -->
+        <DataTemplate x:Key="Standard310x260ItemTemplate">
+            <Grid Height="250" Width="310" Margin="5,10,5,10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Border Background="{ThemeResource ListViewItemPlaceholderBackgroundThemeBrush}" Height="150">
+                    <Image Source="{Binding ImagePath}" Stretch="UniformToFill" AutomationProperties.Name="{Binding Title}"/>
+                </Border>
+                <StackPanel Grid.Row="1" Margin="0,10,0,0">
+                    <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextBlockStyle}" TextWrapping="NoWrap"/>
+                    <TextBlock Text="{Binding Description}" Style="{StaticResource BodyTextBlockStyle}" MaxHeight="60" />
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+    </Page.Resources>
+
+    <!--
+    This grid acts as a root panel for the page.
+  -->
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <Hub SectionHeaderClick="Hub_SectionHeaderClick" Name="MainHub">
+            <Hub.Header>
+                <!-- Back button and page title -->
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button  x:Name="backButton" Style="{StaticResource NavigationBackButtonNormalStyle}"
+                        Margin="0,0,39,0" 
+                        VerticalAlignment="Top"
+                        Command="{Binding NavigationHelper.GoBackCommand, ElementName=pageRoot}"
+                        AutomationProperties.Name="Back"
+                        AutomationProperties.AutomationId="BackButton"
+                        AutomationProperties.ItemType="Navigation Button"/>
+                    <TextBlock x:Name="pageTitle" x:Uid="Header" Text="MetaWear Tester" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                        VerticalAlignment="Top" IsHitTestVisible="false" TextWrapping="NoWrap" />
+                </Grid>
+            </Hub.Header>
+            <HubSection Width="780" x:Name="MainSection">
+                <HubSection.Background>
+                    <ImageBrush ImageSource="Assets/MediumGray.png" Stretch="UniformToFill" />
+                </HubSection.Background>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Name="ResetButton" Content="Restet" Visibility="Collapsed" HorizontalAlignment="Left" Margin="81,146,0,0" VerticalAlignment="Top" RenderTransformOrigin="-4.435,0.541"
+                         Loaded="ResetButton_Loaded" Click="ResetButton_Click"/>
+                        </StackPanel>
+                <Button x:Name="RunButton" Content="Run" HorizontalAlignment="Left" Margin="81,146,0,0" VerticalAlignment="Top" RenderTransformOrigin="-4.435,0.541"
+                         Loaded="RunButton_Loaded" Click="RunButton_Click"/>
+                <ListBox x:Name="DevicesListBox" Visibility="Collapsed" SelectionChanged="DevicesListBox_SelectionChanged"
+                         Loaded="DevicesListBox_Loaded">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+            <HubSection Width="520" x:Uid="Section2Header" IsHeaderInteractive="True" Header="Accelerometer" Name="Accel" DataContext="{Binding}">
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal" Height="400" HorizontalAlignment="Stretch">
+                        <Slider Name="XAccelSlider" Loaded="XAccelSlider_Loaded" Orientation="Vertical" Height="Auto" Minimum="-1.0" Maximum="1.0" Header="x" 
+                                Value="{Binding XAccelSliderValue}"/>
+                        <Slider Name="YAccelSlider" Loaded="YAccelSlider_Loaded" Orientation="Vertical" Margin="20,0,0,0" Height="Auto" Minimum="-1.0" Maximum="1.0" Header="y" 
+                            Value="{Binding YAccelSliderValue}"/>
+                            <Slider Name="ZAccelSlider" Loaded="ZAccelSlider_Loaded" Orientation="Vertical" Margin="20,0,0,0" Height="Auto" Minimum="-1.0" Maximum="1.0" Header="z" 
+                            Value="{Binding ZAccelSliderValue}"/>
+
+
+                            <CheckBox Name="FallingCheck" Loaded="FallingCheck_Loaded" Content="Falling" FontSize="20" VerticalAlignment="Center" Margin="40" 
+                                      IsChecked="{Binding FallingCheckValue}"/>
+                    </StackPanel>
+                        <TextBlock Name="OrientText" Loaded="OrientText_Loaded" VerticalAlignment="Center" Width="Auto" FontSize="22" Margin="20,40,20,20"
+                            Text="{Binding OrientTextValue}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+            <HubSection IsHeaderInteractive="True" Width="400"
+                        x:Uid="Section3Header" Header="LED Controls" Padding="40,40,40,32">
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Height="400" HorizontalAlignment="Stretch">
+                            <Slider Name="RedLEDSlider" Background="RED" Loaded="RedLEDSlider_Loaded" Orientation="Vertical" Height="Auto" Minimum="0" Maximum="31" ValueChanged="LEDSlider_ValueChanged"  Header="Red" />
+                            <Slider Name="BlueLEDSlider" Background="GREEN" Loaded="BlueLEDSlider_Loaded" Orientation="Vertical" Margin="20,0,0,0" Height="Auto" Minimum="0" Maximum="31" ValueChanged="LEDSlider_ValueChanged" Header="Green" />
+                            <Slider Name="GreenLEDSlider" Background="BLUE" Loaded="GreenLEDSlider_Loaded"  Orientation="Vertical" Margin="20,0,0,0" Height="Auto" Minimum="0" Maximum="31" ValueChanged="LEDSlider_ValueChanged" Header="Blue" />
+
+                            <CheckBox Name="GangCheck" Loaded="GangCheck_Loaded"  Content="Ganged" Click="GangCheck_Click" IsChecked="False" FontSize="20" VerticalAlignment="Center" Margin="40" />
+                        </StackPanel>
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Name="LEDText" Loaded="LEDText_Loaded"  VerticalAlignment="Center" Width="Auto" FontSize="22" Margin="20,40,20,20"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Name="StartButton" Content="Stop" HorizontalAlignment="Left" VerticalAlignment="Top" Click="AllOffButton_Click"/>
+                                <Button Name="StopButton" Content="Start>" HorizontalAlignment="Left" Margin="20,0,0,0" VerticalAlignment="Top" Click="StartButton_Click"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Uid="Section4Header" Header="Temperature" IsHeaderInteractive="True" Width="400">
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <StackPanel Orientation="Horizontal" Height="400" HorizontalAlignment="Stretch">
+                            <Slider Name="TempCSlider" Loaded="TempCSlider_Loaded" Orientation="Vertical" Height="Auto" Minimum="-40.0" Maximum="100.0" Header="Celsius" />
+                            <Slider Name="TempFSlider" Loaded="TempFSlider_Loaded"  Orientation="Vertical" Height="Auto" Margin="20,0,0,0" Minimum="-40.0" Maximum="212.0" Header="Fahrenheight" />
+                        </StackPanel>
+                        <TextBlock Name="TempText" Loaded="TempText_Loaded"  VerticalAlignment="Center" Width="Auto" FontSize="22" Margin="20,40,20,20"/>
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+            <HubSection x:Uid="Section5Header" Header="Miscellaneous" IsHeaderInteractive="True" Width="400">
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <ToggleSwitch Name="SwitchState" Height="100" Width="100" Header="Switch State" OnContent="Pressed" OffContent="Released" FontSize="20" Loaded="SwitchState_Loaded"/>
+                        <Button Name="ResetDevice" Height="Auto" Width="Auto" Content="Reset"  FontSize="20" Loaded="ResetDevice_Loaded" Click="ResetDevice_Click"/>
+                    </StackPanel>
+                </DataTemplate>
+            </HubSection>
+        </Hub>
+    </Grid>
+</Page>
