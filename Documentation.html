@@ -1,0 +1,42 @@
+<div class="wikidoc">
+<h1>Documentation</h1>
+<h3>Getting Started</h3>
+<p>To learn about the API, please refer to the documentation provided by MbientLab on their github page.</p>
+<p>I will (eventually) publish differences between the MetaWear Android API and the Windows API here.</p>
+<p>MbientLab's Meta Wear documentation page</p>
+<p><a href="https://www.getcubit.com/product/">https://www.getcubit.com/product/</a></p>
+<p>MbientLab's github page</p>
+<p><a href="https://github.com/mbientlab">https://github.com/mbientlab</a></p>
+<h3>First steps for use</h3>
+<h4>Manifest</h4>
+<p>For your use of the API, you must adjust the manifest of your project per the requirements set forth in the MSDN documentation for Bluetooth LE on Windows phone.&nbsp; A sample manifest section is:</p>
+<p>&lt;<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:DeviceCapability</font></font></font>
+<font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas">Name</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">=&quot;</font></font></font><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas">bluetooth.genericAttributeProfile</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&quot;&gt;<br>
+</font></font></font></code>&nbsp;&nbsp; &lt;!--<code><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas">Eventually change this to MetaWear
+</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">--&gt;<br>
+</font></font></font></code>&nbsp;&nbsp; &lt;<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:Device</font></font></font>
+<font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas">Id</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">=&quot;</font></font></font><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas">any</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&quot;&gt;<br>
+</font></font></font></code>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&lt;!--<code><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas">Standard Battery service
+</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">--&gt;<br>
+</font></font></font></code>&nbsp;&nbsp;&nbsp; &nbsp; &lt;<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:Function</font></font></font>
+<font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas">Type</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">=&quot;</font></font></font><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas">name:battery</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&quot;
+ /&gt;<br>
+</font></font></font></code>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&lt;!--<code><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas">Standard deviceInformation
+</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">--&gt;<br>
+</font></font></font></code>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&lt;<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:Function</font></font></font>
+<font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas">Type</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">=&quot;</font></font></font><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas">serviceId:0000180a-0000-1000-8000-00805f9b34fb</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&quot;
+ /&gt;<br>
+</font></font></font></code>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&lt;!--<code><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas"><font size="2" color="#57a64a" face="Consolas">MetaWear service
+</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">--&gt;<br>
+</font></font></font></code>&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&lt;<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:Function</font></font></font>
+<font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas"><font size="2" color="#92caf4" face="Consolas">Type</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">=&quot;</font></font></font><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas"><font size="2" color="#c8c8c8" face="Consolas">serviceId:326A9000-85CB-9195-D9DD-464CFBBAE75A</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&quot;
+ /&gt;<br>
+</font></font></font></code>&nbsp;&nbsp; &lt;/<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:Device</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&gt;<br>
+</font></font></font></code>&lt;/<code><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas"><font size="2" color="#569cd6" face="Consolas">m2:DeviceCapability</font></font></font><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas"><font size="2" color="#808080" face="Consolas">&gt;</font></font></font></code></p>
+<p>Without this manifest section, one can pair with the device, but the app will not be allowed to communicate with it.</p>
+<h4>Pairing</h4>
+<p>To use any Bluetooth device on Windows and Windows Phone, the device must be paired using the Bluetooth settings page.&nbsp; Only after this is done with an app work with the API.</p>
+<h4>Next Steps for this Project</h4>
+<p>The project currently lacks an example app.</p>
+<p>Next in line is a sample universal application to demonstrate the API on Windows and Windows Phone.</p>
+</div><div class="ClearBoth"></div>
